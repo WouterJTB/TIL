@@ -1,2 +1,2 @@
 # TIL
-Gotcha's and other stuff that I learned
+Notes about gotcha's and other stuff
