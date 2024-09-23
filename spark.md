@@ -29,15 +29,17 @@ Workarounds:
     # Use this
     df.select(
         f.max(col("original1")).over(w1).alias("some1"),
-        f.lag("some1")).over(w2)
+        f.lag("some1").over(w2)
     ).show()
 
     # Not this
     w1 = ...rangeBetween(-300, 0)
     w2 = ...rowsBetween(-1,0)
 
-    (df.withColumn("some1", col(f.max("original1").over(w1))
-    .withColumn("some2", lag("some1")).over(w2)).show()
+    (
+        df.withColumn("some1", col(f.max("original1").over(w1)))
+        .withColumn("some2", lag("some1")).over(w2)
+    ).show()
     ```
 
 ## Clusters
