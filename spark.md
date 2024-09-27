@@ -20,6 +20,8 @@ Using `.withColumn` repeatedly on a single DF can cause memory problems. From [p
 
 > This method introduces a projection internally. Therefore, calling it multiple times, for instance, via loops in order to add multiple columns can generate big plans which can cause performance issues and even StackOverflowException. To avoid this, use select() with multiple columns at once.
 
+There is a flake8 plugin to detect these: [flake8-pyspark-with-column](https://github.com/SemyonSinchenko/flake8-pyspark-with-column)
+
 Workarounds:
 
 - Use [.withColumns](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumns.html) __(only since v3.3.0)__
@@ -50,7 +52,8 @@ Workarounds:
 
 - Drivers can not span multiple nodes
 - Ideally, the Spark Executor resources (including overhead) are a divisor of the allocatable k8s node resources, so that you don't leave unused resources on a node (if this holds true for all jobs in the nodepool, resources can still be allocated somewhat efficiently). AWS has a [useful blog on this](https://aws.amazon.com/blogs/containers/optimizing-spark-performance-on-kubernetes/).
-- Drivers and executors [can be assigned to a different nodepool](https://github.com/kubeflow/spark-operator/issues/1471) (this might be a good idea given the above).
+- Drivers and executors [can be assigned to a different nodepool](https://github.com/kubeflow/spark-operator/issues/1471). I.e. you can run executors on a spot instance nodepool while running drivers on on-demand instances.
+- For (now only on) AWS, consider [Karpenter](https://karpenter.sh/)
 - Few/fat nodes/executors vs. many/small nodes/executors:
   - Many/small nodes/executors still need to communicate, communication between driver/executors on the same pod will be fast (near instant). Communication between nodes will have a (likely very minor) latency cost.
   - Many/small nodes/executors should be more fault tolerant (less work lost if it crashes).
